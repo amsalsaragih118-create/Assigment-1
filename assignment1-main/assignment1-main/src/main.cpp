@@ -1,92 +1,64 @@
 #include <iostream>
-#include <string>
 #include <ctime>
-#include <sstream>
-#include <string>
-
 using namespace std;
 
-// Umur dalam tahun
-int yearsOld(tm* inputTgl, tm* currentTgl);
-// Umur dalam bulan
-int monthsOld(tm* inputTgl, tm* currentTgl);
-// Hari dalam seminggu (Minggu, Senin, ..., Sabtu)
-string dayOfDate(tm* inputTgl);
+// Fungsi menghitung umur dalam tahun
+int hitungUmurTahun(int tgl, int bln, int thn) {
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
 
-int main(int argc, char ** argv) 
-{
-    // time_t -> data structure untuk waktu
-    time_t currentTime;
+    int tahun_sekarang = 1900 + ltm->tm_year;
+    int bulan_sekarang = 1 + ltm->tm_mon;
+    int hari_sekarang = ltm->tm_mday;
 
-    // set variable currentTime ke data sekarang
-    time(&currentTime);
+    int umur = tahun_sekarang - thn;
 
-    // ubah ke localtime (UTC+7)
-    tm* currentTgl = localtime(&currentTime);
+    if (bulan_sekarang < bln || (bulan_sekarang == bln && hari_sekarang < tgl)) {
+        umur--;
+    }
 
-    // print tanggal sekarang (di comment)
-    // cout    <<" year:" << timePtr->tm_year+1900 <-- perlu diperhatikan
-    //        <<" month:"<< timePtr->tm_mon+1
-    //        <<" day:" << timePtr->tm_mday <<endl;
+    return umur;
+}
 
-    //int yearnow = currentTgl->tm_year+1900;    
-    //int monthnow = currentTgl->tm_mon+1;
-    //int daynow = currentTgl->tm_mday;
-    //int dayofweek = currentTgl->tm_wday;       // <-- start dari hari minggu
+// Fungsi menghitung umur dalam bulan
+int hitungUmurBulan(int tgl, int bln, int thn) {
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
 
-    // input tanggal lahir
-    int yearinput, monthinput, dayinput;
-    string inputstr;
-    char ch;
-    // silahkan uncomment kode dibawah untuk debugging
-    //cout << "Input tanggal dalam format DD/MM/YYYY:";
-    cin >> inputstr;
-    stringstream ss(inputstr);
-    ss >> dayinput >> ch >> monthinput >> ch >> yearinput;
+    int tahun_sekarang = 1900 + ltm->tm_year;
+    int bulan_sekarang = 1 + ltm->tm_mon;
 
-    // silahkan uncomment untuk debugging
-    //cout << "Tanggal Input: " << dayinput << "/" << monthinput << "/" << yearinput << endl;
-    
-    // buat tm* untuk tanggal input
-    tm* inputTgl = new tm();
-    inputTgl->tm_year = yearinput-1900;
-    inputTgl->tm_mon = monthinput-1;
-    inputTgl->tm_mday = dayinput;
+    int total_bulan = (tahun_sekarang - thn) * 12 + (bulan_sekarang - bln);
 
-    // ----------------------------------------------------------------------------------------------------------------
-    // --- Ubah di sini
-    // ---  * output yang diinginkan: 32 390 Selasa
-    // ---                  32 -> usia dalam tahun, 390 -> usia dalam bulan, Selasa -> hari dari tanggal input
-    // ----------------------------------------------------------------------------------------------------------------
-    int ageOfYear = yearsOld(inputTgl, currentTgl);
-    int ageOfMonth = monthsOld(inputTgl, currentTgl);
-    string dayName = dayOfDate(inputTgl);
+    return total_bulan;
+}
 
-    cout << ageOfYear << " " << ageOfMonth << " " << dayName;
-    // ----------------------------------------------------------------------------------------------------------------
+// Fungsi menentukan hari dalam minggu (Zeller’s Congruence)
+string hitungHari(int tgl, int bln, int thn) {
+    if (bln < 3) {
+        bln += 12;
+        thn--;
+    }
+
+    int K = thn % 100;
+    int J = thn / 100;
+
+    int h = (tgl + (13 * (bln + 1)) / 5 + K + (K / 4) + (J / 4) + 5 * J) % 7;
+
+    string hari[] = {"Sabtu", "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"};
+
+    return hari[h];
+}
+
+int main() {
+    int tgl, bln, thn;
+
+    cout << "Masukkan tanggal lahir (dd mm yyyy): ";
+    cin >> tgl >> bln >> thn;
+
+    cout << "Umur (tahun): " << hitungUmurTahun(tgl, bln, thn) << endl;
+    cout << "Umur (bulan): " << hitungUmurBulan(tgl, bln, thn) << endl;
+    cout << "Hari lahir: " << hitungHari(tgl, bln, thn) << endl;
 
     return 0;
 }
-
-//*********************************************************************************************************************
-// Silahkan masukkan kode Anda pada fungsi-fungsi berikut
-//*********************************************************************************************************************
-int yearsOld(tm* inputTgl, tm* currentTgl)
-{
-    return 0;
-}
-//*********************************************************************************************************************
-//*********************************************************************************************************************
-int monthsOld(tm* inputTgl, tm* currentTgl)
-{
-    return 0;
-}
-//*********************************************************************************************************************
-//*********************************************************************************************************************
-string dayOfDate(tm* inputTgl)
-{
-    return "RET";
-}
-//*********************************************************************************************************************
-//*********************************************************************************************************************
-
