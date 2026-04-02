@@ -80,7 +80,6 @@ Umur (bulan): 248
 Hari lahir: Rabu
 ```
 
-*(Catatan: hasil umur tergantung tanggal saat program dijalankan)*
 
 
 
